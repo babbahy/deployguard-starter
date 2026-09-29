@@ -23,3 +23,7 @@ data/typed/
 .env.*
 !.env.example
 .modal.toml
+
+# Private local handoff notes and row-level generated outputs
+/CODEX_HANDOFF.md
+analysis/**/predictions.csv
