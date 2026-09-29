@@ -1,0 +1,9 @@
+{
+  "checkpoint": "runs/modernbert-l4-20260927T094219Z-56e25afb/best_model",
+  "test_data": "data/processed/cicd_full/test.jsonl",
+  "device": "cpu",
+  "success": false,
+  "test_rows": 14862,
+  "checkpoint_max_abs_parameter": 8.457017397928852e+37,
+  "error": "FloatingPointError: Non-finite logits at test rows 0:8 on cpu"
+}

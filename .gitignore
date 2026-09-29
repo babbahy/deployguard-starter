@@ -1,0 +1,25 @@
+.venv/
+__pycache__/
+*.pyc
+*.egg-info/
+.pytest_cache/
+data/raw/*
+data/processed/*
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+runs/
+checkpoints/
+wandb/
+.DS_Store
+# Local data bridges and generated model artifacts
+data/typed/
+*.orig
+*.joblib
+*.safetensors
+*.pt
+
+# Local credentials
+.env
+.env.*
+!.env.example
+.modal.toml

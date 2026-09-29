@@ -1,0 +1,26 @@
+# Model and Data Roadmap
+
+## Typed-Decision Models
+
+Upstream source checked out and reverified 2026-09-28:
+
+- **Laya:** [upstream implementation](https://github.com/NandhaKishorM/laya), [model weights](https://huggingface.co/convaiinnovations/laya), and [fine-tuning notebook](https://github.com/NandhaKishorM/laya/blob/9d955671415fc19f069b9cc998928075c1f255ec/notebooks/laya_finetune_typed_decisions_2xT4_kaggle.ipynb). The current notebook trains typed choices with RLCD (proper-scoring-rule reward with a GRPO-style policy-gradient loop plus soft cross-entropy) and temperature calibration. This is not ordinary Hugging Face sequence-classification fine-tuning. Adapt the fixed binary outcome as `choice(success, failure)` and preserve the v1 state exactly. Source commit: `9d955671415fc19f069b9cc998928075c1f255ec`; weight revision: `55cf4c4ebb4ebe31b2550e8bdf3bd21b99753851`. The previous 2026-09-27 source pin `4066d5d5fbf08b66c6757ddeedbd797bd7655bc0` is retained in experiment history.
+- **CLM:** [official implementation](https://github.com/Contrastive-LM/CLM), [fine-tuning guide](https://github.com/Contrastive-LM/CLM/blob/bb42c6c5bf914fd449bed2f6ca65be80602cb1f7/docs/FINETUNING.md). The documented model trains state/action projection heads over a frozen Qwen3-8B last-token-pooling encoder with bidirectional InfoNCE; its choice path also supports soft cross-entropy. Source commit reverified 2026-09-28: `bb42c6c5bf914fd449bed2f6ca65be80602cb1f7`. The stock typed-choice runner loads/evaluates test while training; use a project adapter that only uploads train/validation for tuning and only adds test for final seeds. Record backbone, pooling, frozen/trainable parameter counts, objective, negatives and data format.
+- **Experiment comparison:** modern encoder classification and typed choice do not optimize identical computation paths. Feed the same frozen-v1 state text, targets, split identities and metrics; always retain prevalence, repo-only logistic, rich TF-IDF logistic, and histogram boosting beside each neural result.
+
+`scripts/export_temporal_typed_decisions.py` writes a derived typed-choice representation for every v1 split. Each state is rendered from exactly the 15 audited pre-run fields in `TEMPORAL_V1_STATE_FIELDS`; labels are targets only, and commit identity and post-run fields are excluded. The bridge has been refreshed so its renderer exactly matches ModernBERT's structured-first / commit-message-last order; source split files and hashes are unchanged. The Laya adapter now validates bridge rows against their canonical source before submission and excludes `test.jsonl` from sweep uploads. The CLM adapter will follow the same boundary.
+
+ModernBERT's rich-state experiment is complete and underperforms the frozen rich logistic baseline by test AP. This does not alter the pre-registered Laya or CLM architecture protocols, which are evaluated independently on the same immutable v1 split.
+
+## Additional Data
+
+Keep each source as its own dataset version and benchmark. Define the prediction point, label, split, source hash/license, and availability contract before download/merge.
+
+| Source | Intended question | Integration boundary and risks |
+| --- | --- | --- |
+| [GHALogs](https://github.com/D2KLab/gha-dataset) | Scale and cross-repository GitHub Actions evaluation | Published metadata includes hundreds of thousands of runs and millions of steps; logs are roughly 142 GB. Begin with metadata only, inspect schema/license and event timestamps, and exclude all workflow-step/post-start logs from a pre-run task. Separate repository-disjoint and chronological benchmarks. |
+| [Travis CI / CI-Datasets](https://github.com/elbaum/CI-Datasets) | Cross-provider CI forecasting and older historical CI behavior | Different service semantics, labels, retry policies and coverage. Write a provider-specific outcome map and event-time feature audit. Do not merge labels or scores into GitHub Actions v1. |
+| [RCAEval](https://github.com/phamquiluan/RCAEval) | Post-incident root-cause localization over metrics/logs/traces | It is an incident/RCA task, not a pre-run CI failure dataset. Keep a separate benchmark, incident-time split, root-cause target, and modality-specific leakage audit. |
+| [Coroot RCA Lab](https://github.com/coroot/rca-lab) and OpenTelemetry | Controlled end-to-end incident decisions using service telemetry | RCA Lab is an instrumented Kubernetes fault/incident lab, not a ready-made static production dataset. Use a dedicated isolated cluster, opaque scenario IDs, incident ground truth, and a declared observation window. OTel signals after a run starts must never enter the pre-run CI benchmark. |
+
+The product path is staged: current customer-specific CI forecasting; broader CI corpora for scale/transfer; then separate incident/telemetry tasks for operational diagnosis and action. Only after those contracts work should evaluation combine code changes, deployments, incidents, rollbacks, service context and production telemetry into bounded `CONTINUE / CANARY / ROLLBACK / HUMAN_REVIEW` decisions. The model family is not the product moat; reliable event-time data, customer adaptation, calibrated selective automation, evidence and human fallback are.

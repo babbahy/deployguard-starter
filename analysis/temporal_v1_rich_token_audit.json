@@ -1,0 +1,99 @@
+{
+  "benchmark_id": "temporal-v1-3e9cc5c049399d0b",
+  "split": "train_only",
+  "rows": 41191,
+  "tokenizer": "answerdotai/ModernBERT-base",
+  "tokenizer_revision": "8949b909ec900327062f0ebf497f51aef5e6f0c8",
+  "render_order": "all 14 structured fields first, commit_message last",
+  "percentiles": {
+    "p50": 137.0,
+    "p90": 331.0,
+    "p95": 462.0,
+    "p99": 1039.0999999999985
+  },
+  "max_tokens": 12064,
+  "truncation": {
+    "128": {
+      "fraction": 0.6409409822534049,
+      "rows": 26401
+    },
+    "256": {
+      "fraction": 0.15515525236095262,
+      "rows": 6391
+    },
+    "512": {
+      "fraction": 0.04119832002136389,
+      "rows": 1697
+    }
+  },
+  "selected_max_length": 512,
+  "rationale": "95th percentile is 462 tokens; 95.88% of train rows fit 512. The commit message is rendered last, preserving all structured fields in long states while allowing only the prose tail to truncate.",
+  "examples": [
+    {
+      "percentile": 95,
+      "id": "gha:bitcoin/bitcoin:17079593995",
+      "full_tokens": 462,
+      "fields_present_at_512": {
+        "repository": true,
+        "event": true,
+        "branch": true,
+        "workflow_id": true,
+        "run_number": true,
+        "additions": true,
+        "deletions": true,
+        "num_parents": true,
+        "total_churn": true,
+        "files_modified": true,
+        "msg_len": true,
+        "is_merge": true,
+        "created_hour_utc": true,
+        "created_weekday_utc": true,
+        "commit_message": true
+      }
+    },
+    {
+      "percentile": 99,
+      "id": "gha:bitcoin/bitcoin:15746198636",
+      "full_tokens": 1039,
+      "fields_present_at_512": {
+        "repository": true,
+        "event": true,
+        "branch": true,
+        "workflow_id": true,
+        "run_number": true,
+        "additions": true,
+        "deletions": true,
+        "num_parents": true,
+        "total_churn": true,
+        "files_modified": true,
+        "msg_len": true,
+        "is_merge": true,
+        "created_hour_utc": true,
+        "created_weekday_utc": true,
+        "commit_message": true
+      }
+    },
+    {
+      "percentile": 100,
+      "id": "gha:tailwindlabs/tailwindcss:15784956890",
+      "full_tokens": 12064,
+      "fields_present_at_512": {
+        "repository": true,
+        "event": true,
+        "branch": true,
+        "workflow_id": true,
+        "run_number": true,
+        "additions": true,
+        "deletions": true,
+        "num_parents": true,
+        "total_churn": true,
+        "files_modified": true,
+        "msg_len": true,
+        "is_merge": true,
+        "created_hour_utc": true,
+        "created_weekday_utc": true,
+        "commit_message": true
+      }
+    }
+  ]
+}
